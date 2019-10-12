@@ -21,6 +21,7 @@
  */
 package com.github._1c_syntax.bsl.languageserver.providers;
 
+import com.github._1c_syntax.bsl.languageserver.context.ServerContext;
 import com.github._1c_syntax.bsl.languageserver.context.computer.DiagnosticIgnoranceComputer;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.IOUtils;
@@ -49,6 +50,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -80,6 +82,7 @@ public final class DiagnosticProvider {
     = createDiagnosticsCodes(diagnosticClasses);
 
   private final LanguageServerConfiguration configuration;
+  private final ServerContext context;
   private final Map<String, Set<Diagnostic>> computedDiagnostics;
 
   public DiagnosticProvider() {
@@ -89,6 +92,7 @@ public final class DiagnosticProvider {
   public DiagnosticProvider(LanguageServerConfiguration configuration) {
     this.configuration = configuration;
     computedDiagnostics = new HashMap<>();
+    context = new ServerContext();
   }
 
   public void computeAndPublishDiagnostics(LanguageClient client, DocumentContext documentContext) {
@@ -418,5 +422,13 @@ public final class DiagnosticProvider {
     return activatedByDefault
       || hasCustomConfiguration
       || enabledDirectly;
+  }
+
+  public void setSrcDirForServerContext(Path srvDir) {
+    context.setPathToConfigurationMetadata(srvDir);
+  }
+
+  public ServerContext getContext() {
+    return context;
   }
 }
